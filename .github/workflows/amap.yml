@@ -1,0 +1,91 @@
+name: Build amap apk
+
+env:
+    APK_URL: https://mapdownload.autonavi.com/apps/auto/manual/V750/Auto_7.5.0.600056_beta.apk
+    APKTOOL_VERSION: 2.7.0
+    BAKSMALI_VERSION: 2.5.2
+    SMALI_VERSION: 2.5.2
+    UPLOAD_RELEASE: true
+    TZ: Asia/Shanghai
+
+jobs:
+    build:
+        runs-on: ubuntu-22.04
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Initialization environment
+              run: |
+                  sudo -E apt-get -qq update
+                  sudo -E apt-get -qq upgrade
+                  sudo -E apt-get -qq install wget unzip apksigner
+                  sudo -E apt-get -qq autoremove --purge
+                  sudo -E apt-get -qq clean
+                  sudo timedatectl set-timezone "$TZ"
+                  sudo mkdir -p /workdir
+                  sudo chown $USER:$GROUPS /workdir
+
+            - name: Setup java
+              uses: actions/setup-java@v4
+              with:
+                  distribution: 'temurin'
+                  java-version: '21'
+                  check-latest: true
+
+            - name: Download apk tools
+              run: |
+                  cd /usr/local/bin
+                  sudo -E curl -sLO https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool
+                  sudo -E chmod +x apktool
+                  sudo -E curl -sL -o apktool.jar https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_${APKTOOL_VERSION}.jar
+                  sudo -E chmod +x apktool.jar
+                  sudo -E curl -sL -o baksmali.jar https://bitbucket.org/JesusFreke/smali/downloads/baksmali-${BAKSMALI_VERSION}.jar
+                  sudo -E chmod +x baksmali.jar
+                  sudo -E curl -sL -o smali.jar https://bitbucket.org/JesusFreke/smali/downloads/smali-${SMALI_VERSION}.jar
+                  sudo -E chmod +x smali.jar
+                  sudo -E curl -sL -o AXMLPrinter2.jar https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/android4me/AXMLPrinter2.jar
+                  sudo -E chmod +x AXMLPrinter2.jar
+                  sudo -E cp ./apktool ./baksmali
+                  sudo -E sed -i 's/jarfile=apktool.jar/jarfile=baksmali.jar/' ./baksmali
+                  sudo -E cp ./apktool ./smali
+                  sudo -E sed -i 's/jarfile=apktool.jar/jarfile=smali.jar/' ./smali
+
+            - name: Run build script
+              run: |
+                  chmod +x ./build.sh
+                  ./build.sh
+
+            - name: Generate release tag
+              id: tag
+              if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+              run: |
+                  echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
+                  touch release.txt
+                  echo "status=success" >> $GITHUB_OUTPUT
+
+            - name: Upload firmware to release
+              uses: softprops/action-gh-release@v1
+              if: steps.tag.outputs.status == 'success' && !cancelled()
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  tag_name: ${{ steps.tag.outputs.release_tag }}
+                  body_path: release.txt
+                  files: ${{ env.FIRMWARE }}
+
+            - name: Delete workflow runs
+              uses: GitRML/delete-workflow-runs@main
+              with:
+                  retain_days: 1
+                  keep_minimum_runs: 3
+
+            - name: Remove old Releases
+              uses: dev-drprasad/delete-older-releases@master
+              if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+              with:
+                  keep_latest: 3
+                  delete_tags: true
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
