@@ -95,7 +95,7 @@ jobs:
               with:
                   tag_name: ${{ steps.tag.outputs.release_tag }}
                   body_path: release.txt
-                  files: ./${APK_RELEASE_NAME}
+                  files: ./${{ APK_RELEASE_NAME }}
 
             - name: Delete workflow runs
               uses: GitRML/delete-workflow-runs@main
