@@ -58,9 +58,9 @@ jobs:
                   sudo -E cp ./apktool ./smali
                   sudo -E sed -i 's/jarfile=apktool.jar/jarfile=smali.jar/' ./smali
 
-            - name: Download original apk
-              run: |
-                  curl -sL -o amap.apk ${APK_URL}
+            # - name: Download original apk
+            #   run: |
+            #       curl -sL -o amap.apk ${APK_URL}
 
             - name: Build apk
               run: |
