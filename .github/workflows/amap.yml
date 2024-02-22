@@ -1,7 +1,7 @@
 name: Build amap apk
 
 env:
-    APKTOOL_VERSION: 2.9.0
+    APKTOOL_VERSION: 2.8.1
     BAKSMALI_VERSION: 2.5.2
     SMALI_VERSION: 2.5.2
     UPLOAD_RELEASE: true
