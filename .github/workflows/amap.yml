@@ -1,8 +1,6 @@
 name: Build amap apk
 
 env:
-    APK_URL: https://mapdownload.autonavi.com/apps/auto/manual/V750/Auto_7.5.0.600056_beta.apk
-    APK_RELEASE_NAME: Auto_7.5.0.600056_beta_clone.apk
     APKTOOL_VERSION: 2.7.0
     BAKSMALI_VERSION: 2.5.2
     SMALI_VERSION: 2.5.2
@@ -66,20 +64,8 @@ jobs:
 
             - name: Build apk
               run: |
-                  apktool d amap.apk
-                  sed -i 's/    const\/4 p0, 0x0/    const\/4 p0, 0x1/' `grep -ril "ApkSignUtil.java" ./amap/`
-                  sed -i '/^    iput p1, p0/i\    const\/16 p1, 0xE\n' ./amap/smali/com/autonavi/amapauto/jni/config/AudioConfigData.smali
-                  sed -i '/^    return v1/i\    const\/16 v1, 0xE\n' ./amap/smali/com/autonavi/amapauto/jni/config/AudioConfigData.smali
-                  sed -i '/^    const\/4 v0, 0x0/i\    const\/16 v0, 0xE\n' ./amap/smali/com/autonavi/amapauto/jni/config/AudioConfigData.smali
-                  sed -i '/^    const\/4 v0, 0x0/i\    iput v0, p0, Lcom\/autonavi\/amapauto\/jni\/config\/AudioConfigData;->audioChannel:I\n' ./amap/smali/com/autonavi/amapauto/jni/config/AudioConfigData.smali
-                  sed -i 's/package="com.autonavi.amapauto/package="com.autonavi.amapautoclone/' ./amap/AndroidManifest.xml
-                  sed -i 's/com.autonavi.amapauto.permission/com.autonavi.amapautoclone.permission/' ./amap/AndroidManifest.xml
-                  sed -i 's/android:authorities="com.autonavi.amapauto/android:authorities="com.autonavi.amapautoclone/' ./amap/AndroidManifest.xml
-                  sed -i 's/>高德地图</>高德比亚迪</' ./amap/res/values-zh/strings.xml
-                  sed -i 's/>高德地图</>高德比亚迪</' ./amap/res/values/strings.xml
-                  apktool b amap -o amap_clone.apk
-                  apksigner sign --ks key.keystore --ks-pass pass:qwertasdfgzxcvb --out ${APK_RELEASE_NAME} amap_clone.apk
-                  rm ./amap_clone.apk
+                  chmod +x build.sh
+                  ./build.sh
 
             - name: Generate release tag
               id: tag
@@ -95,7 +81,8 @@ jobs:
               with:
                   tag_name: ${{ steps.tag.outputs.release_tag }}
                   body_path: release.txt
-                  files: ./${{ env.APK_RELEASE_NAME }}
+                  # files: ./${{ env.APK_RELEASE_NAME }}
+                  files: ./out
 
             - name: Delete workflow runs
               uses: GitRML/delete-workflow-runs@main
