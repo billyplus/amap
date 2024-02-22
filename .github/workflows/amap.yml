@@ -87,13 +87,7 @@ jobs:
                   tag_name: ${{ steps.tag.outputs.release_tag }}
                   body_path: release.txt
                   # files: ./${{ env.APK_RELEASE_NAME }}
-                  files: ./out
-
-            - uses: dev-drprasad/delete-older-releases@master
-              with:
-                  keep_latest: 3
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  files: ./out/*
 
             - name: Remove old Releases
               uses: dev-drprasad/delete-older-releases@master
