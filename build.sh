@@ -21,10 +21,10 @@ then
 end
 
 sed -i "s/package=\"com.autonavi.amapauto/package=\"${PACKAGE_NAME}/" ./amap/AndroidManifest.xml
-sed -i "s/com.autonavi.amapauto.permission/${PACKAGE_NAME}.permission/' ./amap/AndroidManifest.xml
+sed -i "s/com.autonavi.amapauto.permission/${PACKAGE_NAME}.permission/" ./amap/AndroidManifest.xml
 sed -i "s/android:authorities=\"com.autonavi.amapauto/android:authorities=\"${PACKAGE_NAME}/" ./amap/AndroidManifest.xml
-sed -i "s/\>高德地图</\>${APP_NAME}</" ./amap/res/values-zh/strings.xml
-sed -i "s/\>高德地图</\>${APP_NAME}</" ./amap/res/values/strings.xml
+sed -i "s/>高德地图</>${APP_NAME}</" ./amap/res/values-zh/strings.xml
+sed -i "s/>高德地图</>${APP_NAME}</" ./amap/res/values/strings.xml
 
 apktool b amap -o amap_clone.apk
 apksigner sign --ks key.keystore --ks-pass pass:qwertasdfgzxcvb --out ./out/${APK_RELEASE_NAME} amap_clone.apk
