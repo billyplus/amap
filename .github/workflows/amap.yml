@@ -89,11 +89,11 @@ jobs:
                   # files: ./${{ env.APK_RELEASE_NAME }}
                   files: ./out
 
-            - name: Delete workflow runs
-              uses: GitRML/delete-workflow-runs@main
+            - uses: dev-drprasad/delete-older-releases@master
               with:
-                  retain_days: 1
-                  keep_minimum_runs: 3
+                  keep_latest: 3
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Remove old Releases
               uses: dev-drprasad/delete-older-releases@master
