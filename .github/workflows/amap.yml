@@ -21,9 +21,6 @@ jobs:
     build:
         runs-on: ubuntu-22.04
 
-        permissions:
-            contents: write
-
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -94,6 +91,5 @@ jobs:
               if: env.UPLOAD_RELEASE == 'true' && !cancelled()
               with:
                   keep_latest: 3
-                  delete_tags: true
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
