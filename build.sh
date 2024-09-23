@@ -1,10 +1,12 @@
 #!/bin/bash
 
 APK_URL='https://mapdownload.autonavi.com/apps/auto/manual/V810/Auto_8.1.0.600004_beta.apk'
-APK_RELEASE_NAME='Auto_8.1.0.600004_beta_clone.apk'
+#APK_RELEASE_NAME='Auto_8.1.0.600004_beta_clone.apk'
 PACKAGE_NAME='com.autonavi.amapautoclone' # 包名
 APP_NAME='高德比亚迪'                          # App显示名称
 FIXED_CHANNEL='on'                        # 锁定14通道，on表示锁定，off表示不锁定
+
+APK_RELEASE_NAME=$(basename $APK_URL .apk)
 
 mkdir ./out
 curl -sL -o amap.apk ${APK_URL}
@@ -26,6 +28,6 @@ sed -i "s/>高德地图</>${APP_NAME}</" ./amap/res/values-zh/strings.xml
 sed -i "s/>高德地图</>${APP_NAME}</" ./amap/res/values/strings.xml
 
 apktool b amap -o amap_clone.apk
-apksigner sign --ks key.keystore --ks-pass pass:qwertasdfgzxcvb --out ./out/${APK_RELEASE_NAME} amap_clone.apk
+apksigner sign --ks key.keystore --ks-pass pass:qwertasdfgzxcvb --out ./out/${APK_RELEASE_NAME}_clone.apk amap_clone.apk
 
 rm ./amap_clone.apk
