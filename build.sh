@@ -1,7 +1,7 @@
 #!/bin/bash
 
 APK_URL='https://mapdownload.autonavi.com/apps/auto/manual/V810/Auto_8.1.0.600004_beta.apk'
-APK_RELEASE_NAME='Auto_7.5.0.600064_release_clone.apk'
+APK_RELEASE_NAME='Auto_8.1.0.600004_beta_clone.apk'
 PACKAGE_NAME='com.autonavi.amapautoclone' # 包名
 APP_NAME='高德比亚迪'                          # App显示名称
 FIXED_CHANNEL='on'                        # 锁定14通道，on表示锁定，off表示不锁定
